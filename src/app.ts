@@ -16,7 +16,7 @@ import { swaggerSpec } from './docs/swagger';
 const app = express();
 
 // CORS configurado de manera segura
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173').split(',');
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://real-state-backend-xvct.onrender.com/').split(',');
 app.use(cors({
   origin: allowedOrigins,
   credentials: true,
