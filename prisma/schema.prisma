@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  buyer
+  agent
+  admin
+}
+
+enum UserStatus {
+  active
+  suspended
+}
+
+enum ListingType {
+  SALE
+  RENT
+}
+
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  email        String        @unique
+  passwordHash String
+  fullName     String
+  phone        String?
+  role         UserRole      @default(buyer)
+  status       UserStatus    @default(active)
+  agentProfile AgentProfile?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  resetTokens  PasswordResetToken[]
+}
+
+model AgentProfile {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String     @unique @db.ObjectId
+  displayName  String
+  bio          String?
+  company      String?
+  licenseNumber String?
+  avatarUrl    String?
+  contactEmail String?
+  contactPhone String?
+  verified     Boolean    @default(false)
+  user         User       @relation(fields: [userId], references: [id])
+  properties   Property[]
+}
+
+model Property {
+  id                String           @id @default(auto()) @map("_id") @db.ObjectId
+  title             String
+  price             Float
+  currency          String
+  location          String
+  bedrooms          Int
+  bathrooms         Float
+  area              Float
+  type              String
+  listingType       ListingType
+  moderationStatus  ModerationStatus @default(PENDING)
+  description       String
+  images            String[]
+  amenities         String[]
+  agentProfile      AgentProfile     @relation(fields: [agentProfileId], references: [id])
+  agentProfileId    String           @db.ObjectId
+}
+
+model PropertyType {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  key   String @unique
+  name  String @unique
+}
+
+model PropertyCharacteristic {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  key     String  @unique
+  label   String
+  type    String
+  options CharacteristicOption[]
+}
+
+model CharacteristicOption {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  label             String
+  value             String
+  characteristic    PropertyCharacteristic @relation(fields: [characteristicId], references: [id])
+  characteristicId  String  @db.ObjectId
+
+  @@unique([characteristicId, value])
+}
+
+model HeroSlide {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  title   String @unique
+  image   String
+  isLocal Boolean @default(false)
+  order   Int     @default(0)
+}
+
+model PasswordResetToken {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  tokenHash String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
