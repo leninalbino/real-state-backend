@@ -10,6 +10,8 @@ import authRoutes from './modules/auth/auth.routes';
 import filtersRoutes from './modules/filters/filters.routes';
 import heroRoutes from './modules/hero/hero.routes';
 import agentsRoutes from './modules/agents/agents.routes';
+import propertyTypesRoutes from './modules/propertyTypes/propertyTypes.routes';
+import propertyCharacteristicsRoutes from './modules/propertyCharacteristics/propertyCharacteristics.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { swaggerSpec } from './docs/swagger';
 
@@ -35,6 +37,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/filters', filtersRoutes);
 app.use('/api/hero-slides', heroRoutes);
 app.use('/api/admin/agents', agentsRoutes);
+app.use('/api/property-types', propertyTypesRoutes);
+app.use('/api/property-characteristics', propertyCharacteristicsRoutes);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get('/api/health', (_req, res) => {
